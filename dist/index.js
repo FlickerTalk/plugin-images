@@ -37,16 +37,20 @@ const SIZES = [
 ];
 
 const STYLE = `
-:host { display: block; font: 14px system-ui, sans-serif; color: #111; }
-@media (prefers-color-scheme: dark) { :host { color: #f4f4f4; } }
+:host { display: block; font: 14px system-ui, sans-serif; color: #111; --paper: #fff; }
+@media (prefers-color-scheme: dark) { :host { color: #f4f4f4; --paper: #111; } }
 .bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 4px 0 10px; }
 button {
   appearance: none; border: 1px solid currentColor; background: transparent; color: inherit;
   border-radius: 10px; min-width: 44px; height: 40px; font-size: 18px; cursor: pointer; opacity: .75;
 }
 button:disabled { opacity: .25; }
+.i {
+  display: block; width: 22px; height: 22px; margin: auto; background: currentColor;
+  -webkit-mask: var(--i) center/contain no-repeat; mask: var(--i) center/contain no-repeat;
+}
 button.on { opacity: 1; background: currentColor; }
-button.on > span { filter: invert(1); }
+button.on .i { background: var(--paper); }
 .grow { flex: 1; }
 .note { font-size: 12px; opacity: .6; }
 .stage { position: relative; display: grid; place-items: center; min-height: 160px; }
@@ -69,14 +73,14 @@ class ImageTools extends HTMLElement {
     this.root.innerHTML = `
       <style>${STYLE}</style>
       <div class="bar">
-        <button data-act="pick" aria-label="Pick a picture"><span>🖼️</span></button>
-        <button data-act="rotate" aria-label="Turn a quarter" disabled><span>🔄</span></button>
-        <button data-act="crop" aria-label="Cut a piece out" disabled><span>✂️</span></button>
-        <button data-act="undo" aria-label="Start again" disabled><span>↩️</span></button>
+        <button data-act="pick" aria-label="Pick a picture"><i class="i" style="--i:url(./icon/image-outline.svg)"></i></button>
+        <button data-act="rotate" aria-label="Turn a quarter" disabled><i class="i" style="--i:url(./icon/refresh-outline.svg)"></i></button>
+        <button data-act="crop" aria-label="Cut a piece out" disabled><i class="i" style="--i:url(./icon/crop-outline.svg)"></i></button>
+        <button data-act="undo" aria-label="Start again" disabled><i class="i" style="--i:url(./icon/arrow-undo-outline.svg)"></i></button>
         <span class="grow"></span>
         <button data-act="size" aria-label="Size"><span>M</span></button>
         <button data-act="quality" aria-label="Quality"><span>80</span></button>
-        <button data-act="send" aria-label="Send it" disabled><span>➤</span></button>
+        <button data-act="send" aria-label="Send it" disabled><i class="i" style="--i:url(./icon/send-outline.svg)"></i></button>
       </div>
       <div class="stage"><canvas></canvas><div class="box" hidden></div></div>
       <p class="note" hidden></p>
@@ -112,7 +116,7 @@ class ImageTools extends HTMLElement {
     image.src = `data:${picked.mime || "image/jpeg"};base64,${picked.data}`;
     await image.decode().catch(() => {});
     if (!image.naturalWidth) {
-      this.say("😕");
+      this.say("That picture cannot be read");
       return;
     }
     this.source = image;
@@ -225,7 +229,7 @@ class ImageTools extends HTMLElement {
     this.canvas.getContext("2d")?.drawImage(this.base, 0, 0, view.width, view.height);
 
     const out = this.made();
-    this.say(out ? `${SIZES[this.size].max ? fitted(this.base, SIZES[this.size].max).width : this.base.width}px · ${weight(out)} · 🚫📍` : "");
+    this.say(out ? `${SIZES[this.size].max ? fitted(this.base, SIZES[this.size].max).width : this.base.width}px · ${weight(out)} · no EXIF` : "");
   }
 
   /** The picture as it will go out: scaled, and written again so nothing of the camera is left. */
@@ -263,3 +267,11 @@ function weight(dataUrl) {
 }
 
 customElements.define("ft-images", ImageTools);
+
+/** An icon the app lends (`./icon/<name>.svg`): painted in the colour of the app, not a picture. */
+function drawIcon(name) {
+  const made = document.createElement("i");
+  made.className = "i";
+  made.style.setProperty("--i", `url(./icon/${name}.svg)`);
+  return made;
+}
