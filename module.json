@@ -1,11 +1,93 @@
 {
   "id": "com.flickertalk.images",
   "name": "Image",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "minCoreVersion": "0.1.0",
   "components": [
     "ft-images"
   ],
   "permissions": {},
-  "summary": "Make a picture smaller, turn it, cut it, and let it go without what the camera wrote in it."
+  "summary": "Make a picture smaller, turn it, cut it, and let it go without what the camera wrote in it.",
+  "locales": {
+    "es": {
+      "name": "Imagen",
+      "summary": "Haz una imagen más pequeña, gírala, recórtala y envíala sin lo que la cámara escribió en ella."
+    },
+    "pt": {
+      "name": "Imagem",
+      "summary": "Reduza uma imagem, rode-a, recorte-a e envie-a sem o que a câmara escreveu nela."
+    },
+    "fr": {
+      "name": "Image",
+      "summary": "Réduisez une image, faites-la pivoter, recadrez-la et envoyez-la sans ce que l’appareil photo y a écrit."
+    },
+    "de": {
+      "name": "Bild",
+      "summary": "Mach ein Bild kleiner, dreh es, schneide es zu und schick es ohne das, was die Kamera hineingeschrieben hat."
+    },
+    "it": {
+      "name": "Immagine",
+      "summary": "Rimpicciolisci un’immagine, ruotala, ritagliala e inviala senza quello che la fotocamera ci ha scritto dentro."
+    },
+    "ro": {
+      "name": "Imagine",
+      "summary": "Micșorează o imagine, rotește-o, decupeaz-o și trimite-o fără ce a scris camera în ea."
+    },
+    "ru": {
+      "name": "Изображение",
+      "summary": "Уменьшите изображение, поверните, обрежьте и отправьте его без того, что в него записала камера."
+    },
+    "uk": {
+      "name": "Зображення",
+      "summary": "Зменште зображення, поверніть, обріжте й надішліть його без того, що в нього записала камера."
+    },
+    "pl": {
+      "name": "Obraz",
+      "summary": "Zmniejsz obraz, obróć go, przytnij i wyślij bez tego, co zapisał w nim aparat."
+    },
+    "tr": {
+      "name": "Görsel",
+      "summary": "Bir görseli küçült, döndür, kırp ve kameranın içine yazdıkları olmadan gönder."
+    },
+    "ar": {
+      "name": "صورة",
+      "summary": "صغّر صورة، ودوّرها، واقتصّها، وأرسلها دون ما كتبته الكاميرا فيها."
+    },
+    "hi": {
+      "name": "तस्वीर",
+      "summary": "तस्वीर छोटी करें, घुमाएँ, काटें और कैमरे ने उसमें जो लिखा है उसके बिना भेजें।"
+    },
+    "bn": {
+      "name": "ছবি",
+      "summary": "ছবি ছোট করুন, ঘোরান, কাটুন, আর ক্যামেরা এতে যা লিখে রেখেছে তা ছাড়াই পাঠান।"
+    },
+    "id": {
+      "name": "Gambar",
+      "summary": "Perkecil gambar, putar, potong, lalu kirim tanpa apa yang ditulis kamera di dalamnya."
+    },
+    "vi": {
+      "name": "Hình ảnh",
+      "summary": "Thu nhỏ ảnh, xoay, cắt và gửi đi mà không kèm những gì máy ảnh đã ghi vào đó."
+    },
+    "th": {
+      "name": "รูปภาพ",
+      "summary": "ย่อรูปภาพ หมุน ครอบตัด แล้วส่งไปโดยไม่มีสิ่งที่กล้องเขียนไว้ในรูป"
+    },
+    "ja": {
+      "name": "画像",
+      "summary": "画像を小さくしたり、回転・切り抜きをしたりして、カメラが書き込んだ情報なしで送れます。"
+    },
+    "ko": {
+      "name": "이미지",
+      "summary": "이미지를 줄이고, 돌리고, 잘라서 카메라가 기록한 정보 없이 보냅니다."
+    },
+    "zh-CN": {
+      "name": "图片",
+      "summary": "缩小图片、旋转、裁剪，并去掉相机写入的信息后发出。"
+    },
+    "zh-TW": {
+      "name": "圖片",
+      "summary": "縮小圖片、旋轉、裁切，並去掉相機寫入的資訊後送出。"
+    }
+  }
 }
