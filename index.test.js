@@ -1,6 +1,27 @@
 // The plugin's own tests (Plan §53): the arithmetic of the tool, away from any canvas.
 import { describe, expect, it } from "vitest";
 import { fitted, normalRect, outName } from "./dist/index.js";
+import manifest from "./module.json";
+
+// The app's languages (plugin-sdk, module.schema.json): English is the top level.
+const languages = ["es", "pt", "fr", "de", "it", "ro", "ru", "uk", "pl", "tr", "ar", "hi", "bn", "id", "vi", "th", "ja", "ko", "zh-CN", "zh-TW"];
+
+// The schema counts characters, not UTF-16 units.
+const length = (text) => [...text].length;
+
+describe("manifest", () => {
+  it("names and sums itself up in every language of the app", () => {
+    expect(Object.keys(manifest.locales ?? {})).toEqual(languages);
+    for (const code of languages) {
+      const { name, summary, ...rest } = manifest.locales[code];
+      expect(rest, code).toEqual({});
+      expect(name?.trim(), code).toBeTruthy();
+      expect(length(name), code).toBeLessThanOrEqual(64);
+      expect(summary?.trim(), code).toBeTruthy();
+      expect(length(summary), code).toBeLessThanOrEqual(200);
+    }
+  });
+});
 
 describe("image tools", () => {
   it("makes a picture fit the longest side asked for", () => {
