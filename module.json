@@ -1,12 +1,14 @@
 {
   "id": "com.flickertalk.images",
   "name": "Image",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "minCoreVersion": "0.1.0",
   "components": [
     "ft-images"
   ],
-  "permissions": {},
+  "permissions": {
+    "send": "propose"
+  },
   "summary": "Make a picture smaller, turn it, cut it, and let it go without what the camera wrote in it.",
   "locales": {
     "es": {
