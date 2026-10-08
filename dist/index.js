@@ -37,7 +37,7 @@ const SIZES = [
 ];
 
 // Ionic draws the window (the app lends it to the frame, app 1.6.0); this is only what is the
-// tool's own: the picture and the crop box over it. The colours are the app's, through Ionic's
+// tool's own: the picture, the crop box over it and the line under it. The colours are the app's, through Ionic's
 // variables, in light and dark.
 const STYLE = `
 ft-images { display: flex; flex-direction: column; height: 100%; }
@@ -49,7 +49,7 @@ ft-images .ft-i {
 ft-images .stage { position: relative; display: grid; place-items: center; min-height: 160px; }
 ft-images canvas { max-width: 100%; touch-action: none; border-radius: 8px; }
 ft-images .box { position: absolute; border: 2px dashed var(--ion-color-primary, currentColor); pointer-events: none; }
-ft-images ion-note { display: block; min-height: 1.5em; margin-top: 8px; font-size: 12px; }
+ft-images .note { font-size: 12px; color: var(--ion-color-medium, inherit); }
 `;
 
 /** An Ionicon in a button: Ionic's own `ion-icon` when the app lent it by name, else the one the
@@ -74,6 +74,7 @@ class ImageTools extends HTMLElement {
     // styles (colours, typography) do not cross a shadow boundary.
     this.innerHTML = `
       <style>${STYLE}</style>
+      <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button data-act="pick" aria-label="Pick a picture">${icon("image-outline")}</ion-button>
@@ -87,14 +88,15 @@ class ImageTools extends HTMLElement {
           <ion-button data-act="send" aria-label="Send it" disabled>${icon("send-outline")}</ion-button>
         </ion-buttons>
       </ion-toolbar>
+      </ion-header>
       <ion-content class="ion-padding">
         <div class="stage"><canvas></canvas><div class="box" hidden></div></div>
-        <ion-note></ion-note>
+        <p class="note" hidden></p>
       </ion-content>
     `;
     this.canvas = this.querySelector("canvas");
     this.boxEl = this.querySelector(".box");
-    this.noteEl = this.querySelector("ion-note");
+    this.noteEl = this.querySelector(".note");
     this.querySelector("ion-toolbar").addEventListener("click", (event) => this.onClick(event));
     this.canvas.addEventListener("pointerdown", (event) => this.onDown(event));
     this.canvas.addEventListener("pointermove", (event) => this.onMove(event));
@@ -265,9 +267,9 @@ class ImageTools extends HTMLElement {
     globalThis.ft.send(outName(this.name, "jpg"), "image/jpeg", made.split(",")[1] ?? "");
   }
 
-  /** A line under the picture. Its room is kept when it is empty, so nothing moves. */
   say(text) {
     this.noteEl.textContent = text;
+    this.noteEl.hidden = !text;
   }
 }
 
