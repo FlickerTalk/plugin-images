@@ -108,8 +108,8 @@ describe("with the Ionic the app lends", () => {
   it("draws in the page, not in a shadow root, so Ionic's own styles reach it", async () => {
     const element = await mount();
     expect(element.shadowRoot).toBe(null);
-    expect(element.querySelector("ion-toolbar")).toBeTruthy();
-    expect(element.querySelector("ion-content canvas")).toBeTruthy();
+    expect(element.querySelector(":scope > ion-header > ion-toolbar")).toBeTruthy();
+    expect(element.querySelector(":scope > ion-content canvas")).toBeTruthy();
   });
 
   it("has every action as an Ionic button in its toolbar, each with a label", async () => {
