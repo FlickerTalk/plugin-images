@@ -36,32 +36,32 @@ const SIZES = [
   { max: 0, label: "1:1" },
 ];
 
+// Ionic draws the window (the app lends it to the frame, app 1.6.0); this is only what is the
+// tool's own: the picture, the crop box over it and the line under it. The colours are the app's, through Ionic's
+// variables, in light and dark.
 const STYLE = `
-:host { display: block; font: 14px system-ui, sans-serif; color: #111; --paper: #fff; }
-@media (prefers-color-scheme: dark) { :host { color: #f4f4f4; --paper: #111; } }
-.bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 4px 0 10px; }
-button {
-  appearance: none; border: 1px solid currentColor; background: transparent; color: inherit;
-  border-radius: 10px; min-width: 44px; height: 40px; font-size: 18px; cursor: pointer; opacity: .75;
-}
-button:disabled { opacity: .25; }
-.i {
-  display: block; width: 22px; height: 22px; margin: auto; background: currentColor;
+ft-images { display: flex; flex-direction: column; height: 100%; }
+ft-images ion-content { flex: 1; }
+ft-images .ft-i {
+  display: block; width: 22px; height: 22px; background: currentColor;
   -webkit-mask: var(--i) center/contain no-repeat; mask: var(--i) center/contain no-repeat;
 }
-button.on { opacity: 1; background: currentColor; }
-button.on .i { background: var(--paper); }
-.grow { flex: 1; }
-.note { font-size: 12px; opacity: .6; }
-.stage { position: relative; display: grid; place-items: center; min-height: 160px; }
-canvas { max-width: 100%; touch-action: none; border-radius: 8px; }
-.box { position: absolute; border: 2px dashed currentColor; pointer-events: none; }
+ft-images .stage { position: relative; display: grid; place-items: center; min-height: 160px; }
+ft-images canvas { max-width: 100%; touch-action: none; border-radius: 8px; }
+ft-images .box { position: absolute; border: 2px dashed var(--ion-color-primary, currentColor); pointer-events: none; }
+ft-images .note { font-size: 12px; color: var(--ion-color-medium, inherit); }
 `;
+
+/** An Ionicon in a button: Ionic's own `ion-icon` when the app lent it by name, else the one the
+ *  app serves at `./icon/<name>.svg`, painted in the button's colour. Never a picture of ours. */
+const icon = (name) =>
+  globalThis.Ionicons?.map?.has(name)
+    ? `<ion-icon slot="icon-only" name="${name}" aria-hidden="true"></ion-icon>`
+    : `<i slot="icon-only" class="ft-i" style="--i:url(./icon/${name}.svg)" aria-hidden="true"></i>`;
 
 class ImageTools extends HTMLElement {
   constructor() {
     super();
-    this.root = this.attachShadow({ mode: "open" });
     this.size = 1;
     this.quality = 0.8;
     this.cropping = false;
@@ -70,35 +70,46 @@ class ImageTools extends HTMLElement {
   }
 
   connectedCallback() {
-    this.root.innerHTML = `
+    // In the page, not in a shadow root: the frame holds only this tool, and Ionic's global
+    // styles (colours, typography) do not cross a shadow boundary.
+    this.innerHTML = `
       <style>${STYLE}</style>
-      <div class="bar">
-        <button data-act="pick" aria-label="Pick a picture"><i class="i" style="--i:url(./icon/image-outline.svg)"></i></button>
-        <button data-act="rotate" aria-label="Turn a quarter" disabled><i class="i" style="--i:url(./icon/refresh-outline.svg)"></i></button>
-        <button data-act="crop" aria-label="Cut a piece out" disabled><i class="i" style="--i:url(./icon/crop-outline.svg)"></i></button>
-        <button data-act="undo" aria-label="Start again" disabled><i class="i" style="--i:url(./icon/arrow-undo-outline.svg)"></i></button>
-        <span class="grow"></span>
-        <button data-act="size" aria-label="Size"><span>M</span></button>
-        <button data-act="quality" aria-label="Quality"><span>80</span></button>
-        <button data-act="send" aria-label="Send it" disabled><i class="i" style="--i:url(./icon/send-outline.svg)"></i></button>
-      </div>
-      <div class="stage"><canvas></canvas><div class="box" hidden></div></div>
-      <p class="note" hidden></p>
+      <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button data-act="pick" aria-label="Pick a picture">${icon("image-outline")}</ion-button>
+          <ion-button data-act="rotate" aria-label="Turn a quarter" disabled>${icon("refresh-outline")}</ion-button>
+          <ion-button data-act="crop" aria-label="Cut a piece out" aria-pressed="false" disabled>${icon("crop-outline")}</ion-button>
+          <ion-button data-act="undo" aria-label="Start again" disabled>${icon("arrow-undo-outline")}</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-button data-act="size" aria-label="Size">M</ion-button>
+          <ion-button data-act="quality" aria-label="Quality">80</ion-button>
+          <ion-button data-act="send" aria-label="Send it" disabled>${icon("send-outline")}</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="stage"><canvas></canvas><div class="box" hidden></div></div>
+        <p class="note" hidden></p>
+      </ion-content>
     `;
-    this.canvas = this.root.querySelector("canvas");
-    this.boxEl = this.root.querySelector(".box");
-    this.noteEl = this.root.querySelector(".note");
-    this.root.addEventListener("click", (event) => this.onClick(event));
+    this.canvas = this.querySelector("canvas");
+    this.boxEl = this.querySelector(".box");
+    this.noteEl = this.querySelector(".note");
+    this.querySelector("ion-toolbar").addEventListener("click", (event) => this.onClick(event));
     this.canvas.addEventListener("pointerdown", (event) => this.onDown(event));
     this.canvas.addEventListener("pointermove", (event) => this.onMove(event));
     this.canvas.addEventListener("pointerup", (event) => this.onUp(event));
-    globalThis.ft?.onOpen(() => {
+    globalThis.ft?.onOpen?.(() => {
       if (!this.base) this.ask();
     });
   }
 
   onClick(event) {
-    const act = event.target.closest("button")?.dataset.act;
+    const button = event.target.closest("ion-button");
+    if (!button || button.disabled) return;
+    const { act } = button.dataset;
     if (act === "pick") this.ask();
     else if (act === "rotate") this.rotate();
     else if (act === "crop") this.toggleCrop();
@@ -215,12 +226,14 @@ class ImageTools extends HTMLElement {
   show() {
     const has = Boolean(this.base);
     for (const act of ["rotate", "crop", "undo", "send"]) {
-      const button = this.root.querySelector(`[data-act="${act}"]`);
+      const button = this.querySelector(`[data-act="${act}"]`);
       if (button) button.disabled = !has;
     }
-    this.root.querySelector('[data-act="crop"]')?.classList.toggle("on", this.cropping);
-    this.root.querySelector('[data-act="size"] span').textContent = SIZES[this.size].label;
-    this.root.querySelector('[data-act="quality"] span').textContent = String(Math.round(this.quality * 100));
+    const crop = this.querySelector('[data-act="crop"]');
+    crop.fill = this.cropping ? "solid" : undefined;
+    crop.setAttribute("aria-pressed", String(this.cropping));
+    this.querySelector('[data-act="size"]').textContent = SIZES[this.size].label;
+    this.querySelector('[data-act="quality"]').textContent = String(Math.round(this.quality * 100));
     if (!has) return;
 
     const view = fitted(this.base, 1024);
@@ -267,11 +280,3 @@ function weight(dataUrl) {
 }
 
 customElements.define("ft-images", ImageTools);
-
-/** An icon the app lends (`./icon/<name>.svg`): painted in the colour of the app, not a picture. */
-function drawIcon(name) {
-  const made = document.createElement("i");
-  made.className = "i";
-  made.style.setProperty("--i", `url(./icon/${name}.svg)`);
-  return made;
-}
